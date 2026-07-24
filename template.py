@@ -485,8 +485,11 @@ def batch_compare(prompts: list[str]) -> list[dict]:
         List các dict — mỗi dict là kết quả compare_models kèm thêm
         key "prompt" chứa prompt gốc.
     """
-    # TODO (bonus): lặp qua prompts, gọi compare_models, thêm key "prompt"
-    raise NotImplementedError("Implement batch_compare")
+    results = []
+    for prompt in prompts:
+        comparison = compare_models(prompt)
+        results.append({**comparison, "prompt": prompt})
+    return results
 
 
 def format_comparison_table(results: list[dict]) -> str:
@@ -496,8 +499,26 @@ def format_comparison_table(results: list[dict]) -> str:
     Cột: Prompt | GPT-4o Response | Mini Response | GPT-4o Latency | Mini Latency
     Gợi ý: cắt text dài còn 40 ký tự cho dễ nhìn.
     """
-    # TODO (bonus): dựng chuỗi bảng và trả về
-    raise NotImplementedError("Implement format_comparison_table")
+    def shorten(text: str) -> str:
+        return text if len(text) <= 40 else f"{text[:37]}..."
+
+    rows = [
+        "Prompt | GPT-4o Response | Mini Response | "
+        "GPT-4o Latency | Mini Latency"
+    ]
+    for result in results:
+        rows.append(
+            " | ".join(
+                [
+                    shorten(result["prompt"]),
+                    shorten(result["gpt4o_response"]),
+                    shorten(result["mini_response"]),
+                    f"{result['gpt4o_latency']:.2f}s",
+                    f"{result['mini_latency']:.2f}s",
+                ]
+            )
+        )
+    return "\n".join(rows)
 
 
 # ---------------------------------------------------------------------------
