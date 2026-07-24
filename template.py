@@ -67,9 +67,21 @@ def call_openai(
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         # đo thời gian bằng time.time() trước và sau lời gọi API
     """
-    # TODO: import OpenAI, tạo client, gọi chat.completions.create,
-    #       đo start/end time, trả về (response_text, latency)
-    raise NotImplementedError("Implement call_openai")
+    from openai import OpenAI
+
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    start = time.time()
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=temperature,
+        top_p=top_p,
+        max_tokens=max_tokens,
+    )
+    latency = time.time() - start
+
+    return response.choices[0].message.content, latency
 
 
 # ---------------------------------------------------------------------------
@@ -90,8 +102,13 @@ def call_openai_mini(
     Gợi ý:
         Tái sử dụng call_openai() với model=OPENAI_MINI_MODEL — 1 dòng code.
     """
-    # TODO: gọi call_openai với model=OPENAI_MINI_MODEL
-    raise NotImplementedError("Implement call_openai_mini")
+    return call_openai(
+        prompt,
+        model=OPENAI_MINI_MODEL,
+        temperature=temperature,
+        top_p=top_p,
+        max_tokens=max_tokens,
+    )
 
 
 # ---------------------------------------------------------------------------
